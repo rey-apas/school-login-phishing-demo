@@ -50,6 +50,17 @@ Offline, single-file classroom demo that simulates a school login page and shows
 - Uses `crypto.subtle.digest('SHA-256')` for hashing and `crypto.subtle.encrypt('AES-GCM')` for ciphertext generation.  
 - Preview text is built from `textContent` only; no raw inputs are sent to servers.  
 - Download exports the preview text as-is (blob URL revoked after use).
+
+## Screenshots
+
+### Exported Data Preview
+- **exported-data-preview-HTTPS.png** – Shows what the exported data looks like if the user “victim” enables HTTPS.
+- **exported-data-preview-NO-HTTPS.png** – Shows what the exported data looks like if the user does **not** enable HTTPS.
+
+### Login Portal with Attacker Simulation
+- **login-portal-with-simulated-HTTPS.png** – Side-by-side view of the login portal and the simulated attacker interface with HTTPS enabled.
+- **login-portal-with-simulated-NO-HTTPS.png** – Side-by-side view of the login portal and the simulated attacker interface with HTTPS disabled.
+
 ### Exported Data — HTTPS (simulated)
 ![Export preview — HTTPS](images/exported-data-preview-HTTPS.png)
 *Export preview when "Simulate HTTPS" is enabled: shows ciphertext and metadata only (no plaintext).*
@@ -66,5 +77,12 @@ Offline, single-file classroom demo that simulates a school login page and shows
 ![Login and attacker preview — No HTTPS](images/login-portal-with-simulated-NO-HTTPS.png)
 *Side‑by‑side view of the login form and the attacker preview while "Simulate HTTPS" is disabled (attacker sees plaintext and hashes).*
 
+## Disclaimer
+
+This project is an educational tool intended solely for classroom demonstrations and security awareness. Do **not** use real credentials, personal data, or live systems with this demo.
+
+Any modification, deployment, or use of the code in this repository for malicious, illegal, or privacy-invasive activities (including phishing, credential harvesting, unauthorized access, or distribution of captured data) is strictly prohibited. The authors, contributors, and distributors of this repository expressly disclaim any liability for damages or losses resulting from misuse.
+
+If you discover a fork or instance of this project being used maliciously, notify the repository owner immediately. This disclaimer is not legal advice.
 
 
