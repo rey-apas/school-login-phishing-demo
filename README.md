@@ -50,3 +50,21 @@ Offline, single-file classroom demo that simulates a school login page and shows
 - Uses `crypto.subtle.digest('SHA-256')` for hashing and `crypto.subtle.encrypt('AES-GCM')` for ciphertext generation.  
 - Preview text is built from `textContent` only; no raw inputs are sent to servers.  
 - Download exports the preview text as-is (blob URL revoked after use).
+### Exported Data — HTTPS (simulated)
+![Export preview — HTTPS](images/exported-data-preview-HTTPS.png)
+*Export preview when "Simulate HTTPS" is enabled: shows ciphertext and metadata only (no plaintext).*
+
+### Exported Data — No HTTPS
+![Export preview — No HTTPS](images/exported-data-preview-NO-HTTPS.png)
+*Export preview when "Simulate HTTPS" is disabled: shows plaintext username and SHA‑256 hashed fields for demonstration.*
+
+### Login Portal — Attacker Preview (HTTPS enabled)
+![Login and attacker preview — HTTPS](images/login-portal-with-simulated-HTTPS.png)
+*Side‑by‑side view of the login form and the attacker preview while "Simulate HTTPS" is enabled (attacker sees ciphertext + metadata only).*
+
+### Login Portal — Attacker Preview (HTTPS disabled)
+![Login and attacker preview — No HTTPS](images/login-portal-with-simulated-NO-HTTPS.png)
+*Side‑by‑side view of the login form and the attacker preview while "Simulate HTTPS" is disabled (attacker sees plaintext and hashes).*
+
+
+
