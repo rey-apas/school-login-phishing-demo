@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>School Portal — Training Simulation</title>
+<style>
+  :root{--bg:#071428;--muted:#9fb0c6;--accent:#60a5fa;--danger:#ff7b7b;--success:#6ee7b7}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#031026,#071428);font-family:Inter,Segoe UI,system-ui,Arial;color:#e6eef8}
+  .wrap{width:980px;max-width:96%;display:grid;grid-template-columns:1fr 420px;gap:20px;padding:28px}
+  .card{border-radius:12px;border:1px solid rgba(255,255,255,.03);padding:18px;background:linear-gradient(180deg,#0b1830,#071428);box-shadow:0 12px 40px rgba(2,6,23,.6)}
+  .right{background:linear-gradient(180deg,#071828,#051223)}
+  h1{margin:0 0 8px;font-size:20px}
+  .tag{font-size:12px;color:#ffd27a;font-weight:700}
+  label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
+  input[type="text"],input[type="password"]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.04);background:rgba(255,255,255,.02);color:inherit;margin-top:6px}
+  .controls-row{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:12px}
+  .switch{display:inline-flex;align-items:center;gap:8px}
+  .padlock{width:20px;height:20px;display:inline-block;vertical-align:middle}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.03)}
+  button{margin-top:14px;padding:12px;border-radius:10px;border:0;background:linear-gradient(#60a5fa,#2563eb);color:#02142b;font-weight:800;cursor:pointer}
+  .note{margin-top:12px;font-size:13px;color:#a9c0d8}
+  .small{font-size:12px;color:#9fb0c6}
+  pre{background:rgba(0,0,0,.25);padding:12px;border-radius:8px;overflow:auto;font-family:ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap}
+  .attackerHeader{color:var(--danger);font-weight:800;margin-bottom:6px}
+  .footer{margin-top:10px;font-size:12px;color:#8ea6bf}
+  .disclaimer{margin-top:10px;padding:10px;border-radius:8px;background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.03);color:#cfe7ff}
+  .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(2,6,23,.88),rgba(2,6,23,.96));backdrop-filter:blur(2px);padding:20px}
+  .attackerBox{width:min(980px,94%);background:#04101a;padding:18px;border-radius:10px;border:1px solid rgba(255,80,80,.06);box-shadow:0 14px 60px rgba(0,0,0,.7);color:#ffdede}
+  .controls{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+  .ghost{background:transparent;border:1px solid rgba(255,255,255,.06);color:#cfe7ff;padding:8px 12px;border-radius:8px;cursor:pointer}
+  .status-secure{color:var(--success);font-weight:700}
+  .status-insecure{color:var(--danger);font-weight:700}
+  @media (max-width:860px){ .wrap{grid-template-columns:1fr; } .right{order:2} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="card left" aria-labelledby="demoTitle">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="tag">TRAINING SIMULATION — SAFE</div>
+          <h1 id="demoTitle">School Portal Login</h1>
+          <div class="small">Offline classroom demo. Do not enter real passwords.</div>
+        </div>
+        <div class="pill" aria-hidden="true">
+          <svg id="padlockIcon" class="padlock" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="10" rx="2" stroke="#9fb0c6" stroke-width="1.5" fill="none"></rect>
+            <path id="shackle" d="M7 11V8a5 5 0 0 1 10 0v3" stroke="#9fb0c6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <span id="connStatus" class="status-insecure">Insecure</span>
+        </div>
+      </div>
+
+      <form id="loginForm" autocomplete="off" style="margin-top:18px;">
+        <label for="user">Username</label>
+        <input id="user" name="username" placeholder="e.g. juan.delacruz" type="text" />
+
+        <label for="pass">Password</label>
+        <input id="pass" name="password" type="password" placeholder="Type a fake password (for demo only)" />
+
+        <div class="controls-row">
+          <label class="switch" for="secureToggle">
+            <input id="secureToggle" type="checkbox" aria-label="Simulate HTTPS" />
+            <span>Simulate HTTPS</span>
+          </label>
+          <button id="submitBtn" type="submit">Log in</button>
+        </div>
+
+        <div class="note">Tip: for the demo, use fake values — nothing will be stored externally.</div>
+      </form>
+
+      <div class="disclaimer">
+        <strong>Safety note:</strong> This simulation runs fully in your browser. The downloaded file contains only cryptographic hashes or ciphertext of the demo inputs and a training disclaimer.
+      </div>
+    </section>
+
+    <aside class="card right" aria-label="Attacker preview">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="small">Attacker Preview (live)</div>
+          <div class="attackerHeader">ATTACKER VIEW — SIMULATION</div>
+        </div>
+        <div style="text-align:right">
+          <div id="httpsHint" class="small">Toggle <strong>Simulate HTTPS</strong> to blur traffic.</div>
+        </div>
+      </div>
+
+      <pre id="preview" style="height:220px">--- NO CAPTURE YET ---
+Submit the form to simulate an attacker capture.</pre>
+
+      <div style="margin-top:10px" class="small">After submit, a simulated <code>captured_log.txt</code> will be offered for download (contains hashes/ciphertext + training note).</div>
+      <div class="footer">Use only in supervised classroom demos. Avoid entering real credentials.</div>
+    </aside>
+  </div>
+
+  <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="attackerBox" role="document">
+      <h2>ATTACKER DASHBOARD — LIVE (SIMULATION)</h2>
+      <div style="font-size:13px;color:#ffd7d7;margin-bottom:8px">
+        The lines below show what an attacker would see. (This is a safe simulation generated only in your browser.)
+      </div>
+      <pre id="overlayText" style="max-height:50vh;overflow:auto"></pre>
+
+      <div class="controls">
+        <button id="downloadBtn" class="ghost" type="button">Download simulated log</button>
+        <button id="closeBtn" class="ghost" type="button">Close & Reset</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+
+const $ = s => document.querySelector(s);
+const userInput = $('#user');
+const passInput = $('#pass');
+const preview = $('#preview');
+const overlay = $('#overlay');
+const overlayText = $('#overlayText');
+const downloadBtn = $('#downloadBtn');
+const closeBtn = $('#closeBtn');
+const submitBtn = $('#submitBtn');
+const secureToggle = $('#secureToggle');
+const padlockIcon = $('#padlockIcon');
+const shackle = $('#shackle');
+const connStatus = $('#connStatus');
+
+let aesKey = null; 
+
+async function genSessionKey(){
+  if (aesKey) return aesKey;
+  aesKey = await crypto.subtle.generateKey({name:'AES-GCM', length:256}, true, ['encrypt','decrypt']);
+  return aesKey;
+}
+
+function toHex(buffer){
+  return Array.from(new Uint8Array(buffer)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function fromHex(hex){
+  const bytes = new Uint8Array(hex.length/2);
+  for(let i=0;i<bytes.length;i++) bytes[i]=parseInt(hex.substr(i*2,2),16);
+  return bytes;
+}
+
+async function encryptHex(plain){
+  const key = await genSessionKey();
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new TextEncoder().encode(plain);
+  const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, enc);
+  
+  return toHex(iv) + ':' + toHex(ct);
+}
+
+async function hashHex(input){
+  const val = (typeof input === 'string' && input.length) ? input : '[empty]';
+  const data = new TextEncoder().encode(val);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return toHex(digest);
+}
+
+function buildPlainPreview(now, raw, unameHash, pwdHash){
+  return [
+    '--- SIMULATED ATTACKER CAPTURE (INSECURE) ---',
+    'Source: USB-opened page (offline demo)',
+    'Timestamp: ' + now.toLocaleString(),
+    '',
+    'Captured fields (plaintext + hashes):',
+    'username (raw): ' + raw,
+    'username (sha256): ' + unameHash,
+    'password (sha256): ' + pwdHash,
+    '',
+    '(NOTE: This is a classroom simulation — raw inputs were NOT stored or transmitted.)',
+    '-------------------------------------------'
+  ].join('\n');
+}
+
+function buildEncryptedPreview(now, ciphertext, rawLen, pwdLen){
+  return [
+    '--- SIMULATED ATTACKER CAPTURE (ENCRYPTED) ---',
+    'Source: USB-opened page (offline demo)',
+    'Timestamp: ' + now.toLocaleString(),
+    '',
+    'Captured packet (encrypted payload):',
+    'ciphertext (iv:cipher): ' + ciphertext,
+    '',
+    'Visible metadata:',
+    'username length: ' + rawLen + ' characters',
+    'password length: ' + pwdLen + ' characters',
+    '',
+    '(NOTE: payload is simulated AES-GCM ciphertext — attacker cannot read plaintext.)',
+    '-----------------------------------------------'
+  ].join('\n');
+}
+
+function getCurrentPreviewText(){
+  return preview.textContent || '--- NO CAPTURE YET ---\nSubmit the form to simulate an attacker capture.';
+}
+
+function downloadText(filename, text){
+  const blob = new Blob([text], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 500);
+}
+
+
+function setPadlock(secure){
+  if (secure){
+    shackle.setAttribute('stroke','#6ee7b7');
+    document.querySelectorAll('.status-insecure,.status-secure').forEach(n=>n.classList.remove('status-insecure','status-secure'));
+    connStatus.textContent = 'Secure (simulated)';
+    connStatus.classList.add('status-secure');
+  } else {
+    shackle.setAttribute('stroke','#ff7b7b');
+    connStatus.textContent = 'Insecure';
+    connStatus.classList.add('status-insecure');
+  }
+}
+
+
+function debounce(fn, wait){
+  let t=null;
+  return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), wait); };
+}
+
+
+const liveUpdate = debounce(async ()=>{
+  const now = new Date();
+  const raw = userInput.value || '';
+  const pwd = passInput.value || '';
+  if (secureToggle.checked){
+        const payload = JSON.stringify({username: raw || '[empty]', password: pwd || '[empty]'});
+    const ciphertext = await encryptHex(payload);
+    const text = buildEncryptedPreview(now, ciphertext, (raw||'[empty]').length, (pwd||'[empty]').length);
+    preview.textContent = text;
+    overlayText.textContent = text;
+  } else {
+    const [uh, ph] = await Promise.all([hashHex(raw), hashHex(pwd)]);
+    const text = buildPlainPreview(now, raw || '[empty]', uh, ph);
+    preview.textContent = text;
+    overlayText.textContent = text;
+  }
+}, 180);
+
+userInput.addEventListener('input', liveUpdate);
+passInput.addEventListener('input', liveUpdate);
+
+secureToggle.addEventListener('change', async ()=>{
+  setPadlock(secureToggle.checked);
+    if (secureToggle.checked) await genSessionKey();
+  liveUpdate();
+});
+
+downloadBtn.addEventListener('click', ()=>{
+  const text = getCurrentPreviewText();
+  downloadText('captured_log.txt', text);
+});
+
+$('#loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  submitBtn.disabled = true;
+   await liveUpdate();
+  const finalText = getCurrentPreviewText();
+  overlayText.textContent = finalText;
+  preview.textContent = finalText; 
+  overlay.style.display = 'flex';
+  overlay.setAttribute('aria-hidden','false');
+  
+  closeBtn.onclick = () => {
+    overlay.style.display = 'none';
+    overlay.setAttribute('aria-hidden','true');
+    $('#loginForm').reset();
+    preview.textContent = '--- NO CAPTURE YET ---\nSubmit the form to simulate an attacker capture.';
+    submitBtn.disabled = false;
+    
+    setPadlock(secureToggle.checked);
+  };
+});
+
+setPadlock(false);
+</script>
+</body>
+</html>
